@@ -187,8 +187,6 @@ public class ChineseDictionary {
 
     String output = String.format("%s/classifiers/dict-chris6.ser.gz", System.getenv("CHINESE_SEGMENTER_HOME"));
 
-
-
     Map<String,Integer> flagMap = Generics.newHashMap();
     flagMap.put("-inputDicts", 1);
     flagMap.put("-output", 1);
