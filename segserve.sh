@@ -11,22 +11,22 @@ usage() {
   exit
 }
 
-if [ $# -lt 3 -o $# -gt 4 ]; then
+if [ $# -lt 2 -o $# -gt 3 ]; then
 	usage
 fi
 
 ARGS="-keepAllWhitespaces false"
-if [ $# -eq 4 -a "$1"=="-k" ]; then
+if [ $# -eq 3 -a "$1"=="-k" ]; then
 		ARGS="-keepAllWhitespaces true"
 		lang=$2
 		file=$3
-		enc=$4
+		enc='UTF-8'
 		kBest=$5
 else 
-	if [ $# -eq 3 ]; then
+	if [ $# -eq 2 ]; then
 		lang=$1
 		file=$2
-		enc=$3
+		enc='UTF-8'
 		kBest=$4
 	else
     echo $#
@@ -52,7 +52,7 @@ echo "-------------------------------" >&2
 BASEDIR=`dirname $0`
 DATADIR=$BASEDIR/data
 #LEXDIR=$DATADIR/lexicons
-JAVACMD="java -mx2g -cp $BASEDIR/seg.jar edu.stanford.nlp.ie.NERServer -testFile $file -outputFormat xml -preserveSpacing true -port $CHINESE_SEGMENTER_PORT $ARGS"
+JAVACMD="java -mx2g -cp $BASEDIR/seg.jar edu.stanford.nlp.ie.NERServer -sighanCorporaDict $DATADIR -sighanPostProcessing true -testFile $file -outputFormat xml -preserveSpacing true -port $CHINESE_SEGMENTER_PORT $ARGS"
 DICTS=$DATADIR/dict-chris6.ser.gz
 echo $DICTS
 KBESTCMD=""

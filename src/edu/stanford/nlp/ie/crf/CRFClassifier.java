@@ -3414,21 +3414,26 @@ public class CRFClassifier<IN extends CoreMap> extends AbstractSequenceClassifie
     }
 
     if (loadPath != null) {
+      System.out.println("loadClassifierNoExceptions: " + loadPath + "\n");
       crf.loadClassifierNoExceptions(loadPath, props);
     } else if (loadTextPath != null) {
       System.err.println("Warning: this is now only tested for Chinese Segmenter");
       System.err.println("(Sun Dec 23 00:59:39 2007) (pichuan)");
       try {
+        System.out.println("loadTextClassifier: " + loadTextPath + "\n");
         crf.loadTextClassifier(loadTextPath, props);
         // System.err.println("DEBUG: out from crf.loadTextClassifier");
       } catch (Exception e) {
         throw new RuntimeException("error loading " + loadTextPath, e);
       }
     } else if (crf.flags.loadJarClassifier != null) {
+      System.out.println("loadJarClassifier\n");
       crf.loadJarClassifier(crf.flags.loadJarClassifier, props);
     } else if (crf.flags.trainFile != null || crf.flags.trainFileList != null) {
+      System.out.println("Train classifier\n");
       crf.train();
     } else {
+      System.out.println("Load Default Classifier\n");
       crf.loadDefaultClassifier();
     }
 

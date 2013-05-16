@@ -40,7 +40,7 @@ public class NERServer {
   /**
    * Debugging toggle.
    */
-  private boolean DEBUG = false;
+  private boolean DEBUG = true;
 
   private final String charset;
 
@@ -161,7 +161,8 @@ public class NERServer {
       String input = null;
       try {
         input = in.readLine();
-        if (DEBUG) {
+        //if (DEBUG) {
+        if (true) {
           EncodingPrintWriter.err.println("Receiving: \"" + input + '\"', charset);
         }
       }
@@ -175,7 +176,7 @@ public class NERServer {
       }
       if (! (input == null)) {
         //String output = ner.classifyToString(input);
-		String output = ner.classifyToString(input, format, spacing);
+        String output = ner.classifyToString(input, format, spacing);
         if (DEBUG) {
           EncodingPrintWriter.err.println("Sending: \"" + output + '\"', charset);
         }
@@ -265,53 +266,54 @@ public class NERServer {
    */
   @SuppressWarnings({"StringEqualsEmptyString"})
   public static void main (String[] args) throws Exception {
-	//defaults
-	int port = 1234;
-	String charset = "utf-8";
-	String outputFormat = "slashTags";
-	boolean preserveSpacing = true;
+    //defaults
+    int port = 1234;
+    String charset = "utf-8";
+    String outputFormat = "slashTags";
+    boolean preserveSpacing = true;
 
     Properties props = StringUtils.argsToProperties(args);
     String loadFile = props.getProperty("loadClassifier");
     String loadJarFile = props.getProperty("loadJarClassifier");
     String client = props.getProperty("client");
     String portStr = props.getProperty("port");
-	String outputFormatStr = props.getProperty("outputFormat");
-	String preserveSpacingStr = props.getProperty("preserveSpacing");
+    String outputFormatStr = props.getProperty("outputFormat");
+    String preserveSpacingStr = props.getProperty("preserveSpacing");
     String encoding = props.getProperty("encoding");
-	
-	if (portStr == null || portStr.equals("")) {
+
+    if (portStr == null || portStr.equals("")) {
+        System.err.println(USAGE);
+        return;
+    } else {
+          try {
+        port = Integer.parseInt(portStr);
+      } catch (NumberFormatException e) {
+        System.err.println("Non-numerical port");
+        System.err.println(USAGE);
+        System.exit(1);
+      }
+      }
+
+    if (encoding != null && ! "".equals(encoding)) {
+        charset = encoding;
+      }
+
+    if (outputFormatStr != null && !"".equals(outputFormatStr) && !"slashTags".equals(outputFormatStr)
+        && !"xml".equals(outputFormatStr) && !"inlineXML".equals(outputFormatStr)) {
       System.err.println(USAGE);
       return;
-	} else {
-        try {
-		  port = Integer.parseInt(portStr);
-		} catch (NumberFormatException e) {
-		  System.err.println("Non-numerical port");
-		  System.err.println(USAGE);
-		  System.exit(1);
-		}
+    } else {
+      outputFormat = outputFormatStr;
     }
-	
-	if (encoding != null && ! "".equals(encoding)) {
-      charset = encoding;
-    }
-	
-	if (outputFormatStr != null && !"".equals(outputFormatStr) && !"slashTags".equals(outputFormatStr)
-	    && !"xml".equals(outputFormatStr) && !"inlineXML".equals(outputFormatStr)) {
-	  System.err.println(USAGE);
-	  return;
-	} else {
-	  outputFormat = outputFormatStr;
-	}
 
-	if (preserveSpacingStr != null && ! "".equals(preserveSpacingStr)) {
-	  preserveSpacing = Boolean.valueOf(preserveSpacingStr);
-	}
+    if (preserveSpacingStr != null && ! "".equals(preserveSpacingStr)) {
+      preserveSpacing = Boolean.valueOf(preserveSpacingStr);
+    }
 
     AbstractSequenceClassifier asc;
     if (loadFile != null && ! loadFile.equals("")) {
-      asc = CRFClassifier.getClassifier(loadFile);
+      System.out.println(String.format("Using classifier loaded from %s", loadFile));
+      asc = CRFClassifier.getClassifier(loadFile, props);
     } else if (loadJarFile != null && ! loadJarFile.equals("")) {
       asc = CRFClassifier.getJarClassifier(loadJarFile, props);
     } else {
